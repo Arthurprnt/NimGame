@@ -12,13 +12,13 @@ print(data["pop"])
 
 file.close()
 
-data["pop"] = []
+def savepop(popu):
+    data["pop"] = popu
 
-json_object = json.dumps(data, indent=4)
+    json_object = json.dumps(data, indent=4)
 
-with open("pop.json", "w") as outfile:
-    outfile.write(json_object)
-        
+    with open("pop.json", "w") as outfile:
+        outfile.write(json_object)
 
 def mutation(listepropre):
     liste = listepropre[:]
@@ -35,7 +35,10 @@ def createPop():
     indi = [random.randint(1, 3) for _ in range(NOMBRE_PIECE)]
     indi[0] = 1
     if indi[1] > 2:
-        indi[1] = 2
+        if random.randint(1, 2) == 1:
+            indi[1] = 1
+        else:
+            indi[1] = 2
     gen = [indi]
     for i in range(MEMBRES_PAR_POPULATION-1):
         gen.append(mutation(indi))
@@ -55,56 +58,72 @@ print(population)
 
 gen = 0
 indi = 0
-liste_switness = []
 
-for i in range(MEMBRES_PAR_POPULATION):
-    
-    pieces = NOMBRE_PIECE
-    remain = True
-    switness = 0
-    
-    while remain:
-        
-        showPieces(pieces)
-        
-        request = NOMBRE_PIECE+1
-        while pieces - request < 0:
-            request = int(input("Combien de pieces voulez vous enlever ? "))
-            if pieces - request < 0:
-                print("Il n'y a pas assez de pièces")
-                
-        pieces -= request
-        if pieces == 0:
-            gagnant = "Humain"
-            remain = False
-        
-        if pieces != 0:
+for i in range(5):
+
+    liste_switness = []
+
+    for i in range(MEMBRES_PAR_POPULATION):
+
+        pieces = NOMBRE_PIECE
+        remain = True
+        switness = 0
+
+        while remain:
+
             showPieces(pieces)
-        
-            print("L'ia a enlevé", population[gen][indi][pieces-1], "pièces")
-        
-            pieces -= population[gen][indi][pieces-1]
-            
-            switness += 1
-            
+
+            request = NOMBRE_PIECE+1
+            while pieces - request < 0:
+                request = int(input("Combien de pieces voulez vous enlever ? "))
+                if pieces - request < 0:
+                    print("Il n'y a pas assez de pièces")
+
+            pieces -= request
             if pieces == 0:
-                gagnant = "Ia"
+                gagnant = "Humain"
                 remain = False
-                switness += 100
-           
-    liste_switness.append(switness)
-                
-    print("Gagnant:", gagnant)
-    print("")
-    print("")
-    indi += 1
-    
-print(liste_switness)
 
-bestswiind = liste_switness.index(max(liste_switness))
+            if pieces != 0:
+                showPieces(pieces)
 
-bestswi = population[gen][bestswiind]
+                print("L'ia a enlevé", population[gen][indi][pieces-1], "pièces")
 
-print(bestswi)
-    
-    
+                pieces -= population[gen][indi][pieces-1]
+
+                switness += 1
+
+                if pieces == 0:
+                    gagnant = "Ia"
+                    remain = False
+                    switness += 100
+
+        liste_switness.append(switness)
+
+        print("Gagnant:", gagnant)
+        print("")
+        print("")
+        indi += 1
+
+    bestindi = population[gen][liste_switness.index(max(liste_switness))]
+    gen += 1
+    indi = 0
+
+    population.append([])
+    for i in population[gen-1]:
+        if i != bestindi:
+            newindi = []
+            for y in range(len(i)):
+                print(i[y])
+                newindi.append(round((i[y]+bestindi[y])/2))
+            newindi[0] = 1
+            if newindi[1] > 2:
+                if random.randint(1, 2) == 1:
+                    newindi[1] = 1
+                else:
+                    newindi[1] = 2
+            population[gen].append(newindi[:])
+        else:
+            population[gen].append(i[:])
+
+    print(population)
