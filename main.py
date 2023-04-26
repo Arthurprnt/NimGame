@@ -1,21 +1,26 @@
-import json, random
+import json, random, os
   
 CHANCE_MUTATION_NEURONE = 0.39
 MEMBRES_PAR_POPULATION = 10
 NOMBRE_PIECE = 8
-SAVE_POP = str(input("Name the new save: "))
 
-# Opening JSON file
-file = open(SAVE_POP + '.json')
-data = json.load(file)
-  
-print(data["pop"])
-if len(data['pop']) != 0 and len(data['pop'][0]) != 0 and len(data['pop'][0]) == MEMBRES_PAR_POPULATION and len(data['pop'][0][0]) == NOMBRE_PIECE:
-    population = data['pop']
-else:
-    print("The save format is not the same as in the setting, creating a new save...")
+save = "unnamedpop"
+data = {"pop":[], "gen":0}
 
-file.close()
+if input("Do you wan't to use an existing save (y/n) ? ").lower() == 'y':
+    save = str(input("Save name: ")).replace(".json", "")
+    while not os.path.isfile(save + '.json'):
+        print('This file does not exist.')
+        save = str(input("Save name: ")).replace(".json", "")
+
+    file = open(save + '.json')
+    data = json.load(file)
+
+    if data['pop'] != []:
+        MEMBRES_PAR_POPULATION = len(data['pop'][0])
+        NOMBRE_PIECE = len(data['pop'][0][0])
+
+    file.close()
 
 def savepop(popu, gene):
     data["pop"] = popu
@@ -23,7 +28,7 @@ def savepop(popu, gene):
 
     json_object = json.dumps(data, indent=4)
 
-    with open(SAVE_POP + ".json", "w") as outfile:
+    with open(save + ".json", "w") as outfile:
         outfile.write(json_object)
 
 def mutation(listepropre):
@@ -31,9 +36,9 @@ def mutation(listepropre):
     for i in range(len(liste)-2):
         rng = random.random()
         if rng < CHANCE_MUTATION_NEURONE:
-            if random.randint(1, 2) == 1 and liste[i] < 3:
+            if random.randint(1, 2) == 1 and liste[i] <= 2:
                 liste[i] += 1
-            elif liste[i] > 1:
+            elif liste[i] >= 2:
                 liste[i] -= 1
     return liste
     
@@ -76,7 +81,7 @@ def makenewgen(pop, indi, generation):
         else:
             pop[generation].append(mutation(i[:]))
 
-    
+
 population = [createPop()]
 
 print(population)
