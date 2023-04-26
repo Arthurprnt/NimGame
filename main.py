@@ -1,6 +1,8 @@
-import os
+import os, pygame
 from functions import *
-  
+from btrpygame import *
+
+'''
 CHANCE_MUTATION_NEURONE = 0.39
 MEMBRES_PAR_POPULATION = 10
 NOMBRE_PIECE = 8
@@ -82,3 +84,31 @@ for i in range(5):
     savepop(save, population, gen, data)
 
     print(population)
+'''
+
+running = True
+debug = False
+stats = 0
+screen = pygame.display.set_mode()
+screen_x, screen_y = screen.get_size()
+pygame.display.set_caption('NimGame')
+clock = pygame.time.Clock()
+
+background = pygameimage(pygame.image.load('assets/background.png'), (screen_x // 2 - 2560 // 2, screen_y // 2 - 1440 // 2))
+
+while running:
+
+    screen.blit(background.image, background.pos)
+
+    # Manage user inputs
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
+
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
