@@ -3,21 +3,27 @@ import json, random
 CHANCE_MUTATION_NEURONE = 0.39
 MEMBRES_PAR_POPULATION = 10
 NOMBRE_PIECE = 8
+SAVE_POP = str(input("Name the new save: "))
 
 # Opening JSON file
-file = open('pop.json')
+file = open(SAVE_POP + '.json')
 data = json.load(file)
   
 print(data["pop"])
+if len(data['pop']) != 0 and len(data['pop'][0]) != 0 and len(data['pop'][0]) == MEMBRES_PAR_POPULATION and len(data['pop'][0][0]) == NOMBRE_PIECE:
+    population = data['pop']
+else:
+    print("The save format is not the same as in the setting, creating a new save...")
 
 file.close()
 
-def savepop(popu):
+def savepop(popu, gene):
     data["pop"] = popu
+    data["gen"] = gene
 
     json_object = json.dumps(data, indent=4)
 
-    with open("pop.json", "w") as outfile:
+    with open(SAVE_POP + ".json", "w") as outfile:
         outfile.write(json_object)
 
 def mutation(listepropre):
@@ -49,6 +55,26 @@ def showPieces(pieces):
     for i in range(pieces):
         txt = txt + "o "
     print(txt)
+
+def makenewgen(pop, indi, generation):
+    pop.append([])
+    for i in pop[gen-1]:
+        if i != indi:
+            newindi = []
+            for y in range(len(i)):
+                if random.randint(1, 2):
+                    newindi.append(i[y])
+                else:
+                    newindi.append(indi[y])
+            newindi[0] = 1
+            if newindi[1] > 2:
+                if random.randint(1, 2) == 1:
+                    newindi[1] = 1
+                else:
+                    newindi[1] = 2
+            pop[generation].append(mutation(newindi[:]))
+        else:
+            pop[generation].append(mutation(i[:]))
 
     
 population = [createPop()]
@@ -109,21 +135,7 @@ for i in range(5):
     gen += 1
     indi = 0
 
-    population.append([])
-    for i in population[gen-1]:
-        if i != bestindi:
-            newindi = []
-            for y in range(len(i)):
-                print(i[y])
-                newindi.append(round((i[y]+bestindi[y])/2))
-            newindi[0] = 1
-            if newindi[1] > 2:
-                if random.randint(1, 2) == 1:
-                    newindi[1] = 1
-                else:
-                    newindi[1] = 2
-            population[gen].append(newindi[:])
-        else:
-            population[gen].append(i[:])
+    makenewgen(population, bestindi, gen)
+    savepop(population, gen)
 
     print(population)
