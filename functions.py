@@ -1,12 +1,13 @@
 import json, random
 
-def savepop(nom, popu, gene, data):
+def savepop(nom, popu, best, gene, data):
     data["pop"] = popu
     data["gen"] = gene
+    data["best"] = best
 
     json_object = json.dumps(data, indent=4)
 
-    with open(nom + ".json", "w") as outfile:
+    with open("json/" + nom + ".json", "w") as outfile:
         outfile.write(json_object)
 
 
@@ -15,10 +16,10 @@ def mutation(listepropre, chancemut):
     for i in range(len(liste) - 2):
         rng = random.random()
         if rng < chancemut:
-            if random.randint(1, 2) == 1 and liste[i] <= 2:
-                liste[i] += 1
-            elif liste[i] >= 2:
-                liste[i] -= 1
+            liste[i] = random.randint(1, 3)
+    liste[0] = 1
+    if liste[1] == 3:
+        liste[1] = 2
     return liste
 
 
@@ -35,6 +36,11 @@ def createPop(nbmembers, chancemut, nbcoins):
         gen.append(mutation(indi, chancemut))
     return gen
 
+def moyenneListe(liste1, liste2):
+    newliste = []
+    for i in range(len(liste1)):
+        newliste.append((liste1[i]+liste2[i])/2)
+    return newliste
 
 def showPieces(pieces):
     txt = ""
@@ -43,22 +49,12 @@ def showPieces(pieces):
     print(txt)
 
 
-def makenewgen(pop, indi, generation):
+def makenewgen(pop, indi, chancemut, nbmembre):
     pop.append([])
-    for i in pop[generation - 1]:
-        if i != indi:
-            newindi = []
-            for y in range(len(i)):
-                if random.randint(1, 2):
-                    newindi.append(i[y])
-                else:
-                    newindi.append(indi[y])
-            newindi[0] = 1
-            if newindi[1] > 2:
-                if random.randint(1, 2) == 1:
-                    newindi[1] = 1
-                else:
-                    newindi[1] = 2
-            pop[generation].append(mutation(newindi[:]))
+    for i in range(nbmembre):
+        if i not in indi:
+            pop[-1].append(mutation(moyenneListe(indi[random.randint(0, len(indi)-1)], pop[-2][i]), chancemut))
         else:
-            pop[generation].append(mutation(i[:]))
+            pop[-1].append(indi[indi.index(nbmembre[i])])
+    if len(pop) > 15:
+        pop.pop(0)
