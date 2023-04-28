@@ -13,7 +13,7 @@ def savepop(nom, popu, best, gene, data):
 
 def mutation(listepropre, chancemut):
     liste = listepropre[:]
-    for i in range(len(liste) - 2):
+    for i in range(len(liste)-1):
         rng = random.random()
         if rng < chancemut:
             liste[i] = random.randint(1, 3)
@@ -52,9 +52,9 @@ def showPieces(pieces):
 def makenewgen(pop, indi, chancemut, nbmembre):
     pop.append([])
     for i in range(nbmembre):
-        if i not in indi:
+        if pop[-2][i] not in indi:
             pop[-1].append(mutation(moyenneListe(indi[random.randint(0, len(indi)-1)], pop[-2][i]), chancemut))
         else:
-            pop[-1].append(indi[indi.index(nbmembre[i])])
+            pop[-1].append(indi[indi.index(pop[-2][i])])
     if len(pop) > 15:
         pop.pop(0)

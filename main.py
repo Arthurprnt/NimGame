@@ -1,10 +1,10 @@
 import os
 from functions import *
 
-CHANCE_MUTATION_NEURONE = 0.17
-MEMBRES_PAR_POPULATION = 100
+CHANCE_MUTATION_NEURONE = 0.19
+MEMBRES_PAR_POPULATION = 120
 NOMBRE_PIECE = 8
-PLAY_BEST = False
+PLAY_BEST = True
 
 if input("Do you wan't to use an existing save (y/n) ? ").lower() == 'y':
     save = str(input("Save name: ")).replace(".json", "")
@@ -31,8 +31,11 @@ else:
     best = []
 
 indi = 0
+generationmade = 0
+showgen = 9
 
-for i in range(100000):
+
+for i in range(5000):
 
     liste_switness = []
     winia = 0
@@ -45,21 +48,20 @@ for i in range(100000):
 
         while remain:
             
-            """
-            showPieces(pieces)
-            
-            request = NOMBRE_PIECE+1
-            while pieces - request < 0:
-                request = int(input("Combien de pieces voulez vous enlever ? "))
-                if pieces - request < 0:
-                    print("Il n'y a pas assez de pièces")
-            
-            """
-            listemoovs = [1, 2, 3, 0, 1, 2, 3, 0]
-            for i in range(len(listemoovs)):
-                if listemoovs[i] == 0:
-                    listemoovs[i] = random.randint(1, 3)
-            request = listemoovs[pieces-1]
+            if PLAY_BEST == True:
+                showPieces(pieces)
+                
+                request = NOMBRE_PIECE+1
+                while pieces - request < 0:
+                    request = int(input("Combien de pieces voulez vous enlever ? "))
+                    if pieces - request < 0:
+                        print("Il n'y a pas assez de pièces")
+            else:
+                listemoovs = [1, 2, 3, 0, 1, 2, 3, 0]
+                for i in range(len(listemoovs)):
+                    if listemoovs[i] == 0:
+                        listemoovs[i] = random.randint(1, 3)
+                request = listemoovs[pieces-1]
             
             pieces -= request
             if pieces <= 0:
@@ -68,13 +70,11 @@ for i in range(100000):
 
             if pieces != 0:
                 
-                #showPieces(pieces)
-                
                 if best != [] and PLAY_BEST == True:
-                    #print("L'ia a enlevé", best[pieces-1], "pièces")
+                    showPieces(pieces)
+                    print("L'ia a enlevé", round(best[pieces-1]), "pièces")
                     pieces -= round(best[pieces-1])
                 else:
-                    #print("L'ia a enlevé", population[-1][indi][pieces-1], "pièces")
                     pieces -= round(population[-1][indi][pieces-1])
 
                 switness -= 1
@@ -87,15 +87,14 @@ for i in range(100000):
 
         liste_switness.append(switness)
         
-        """
-        print("Gagnant:", gagnant)
-        print("")
-        print("")
-        """
+        if PLAY_BEST == True:
+            print("Gagnant:", gagnant)
+            print("")
+            print("")
+        
         
         indi += 1
-    
-    bestindi = population[-1][liste_switness.index(max(liste_switness))]
+
     bestindi = []
     bestswit = 0
     for i in range(len(population[-1])):
@@ -108,10 +107,22 @@ for i in range(100000):
     indi = 0
     
     winrate = (winia*100)/MEMBRES_PAR_POPULATION
-    print("Génération: " + str(gen) + " | Winrate: " + str(round(winrate, 1)) + "%")
+    
+    showgen += 1
+    if showgen >= 100:
+        print("Génération: " + str(gen) + " | Winrate: " + str(round(winrate, 1)) + "%")
+        showgen = 0
 
     makenewgen(population, bestindi, CHANCE_MUTATION_NEURONE, MEMBRES_PAR_POPULATION)
-    savepop(save, population, bestindi[random.randint(0, len(bestindi)-1)], gen, data)
+    
+    generationmade += 1
+    if generationmade >= 1000:
+        savepop(save, population, bestindi[random.randint(0, len(bestindi)-1)], gen, data)
+        generationmade = 0
+    
+print("Génération: " + str(gen) + " | Winrate: " + str(round(winrate, 1)) + "%")
+savepop(save, population, bestindi[random.randint(0, len(bestindi)-1)], gen, data)
+#fichier.close()
 
 """
 running = True
