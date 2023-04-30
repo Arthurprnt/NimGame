@@ -1,10 +1,13 @@
-import os
+import os, pygame
 from functions import *
+from btrpygame import *
+from imports import *
 
+"""
 CHANCE_MUTATION_NEURONE = 0.19
 MEMBRES_PAR_POPULATION = 120
 NOMBRE_PIECE = 8
-PLAY_BEST = True
+PLAY_BEST = False
 
 if input("Do you wan't to use an existing save (y/n) ? ").lower() == 'y':
     save = str(input("Save name: ")).replace(".json", "")
@@ -35,7 +38,7 @@ generationmade = 0
 showgen = 9
 
 
-for i in range(5000):
+for i in range(1000):
 
     liste_switness = []
     winia = 0
@@ -110,7 +113,7 @@ for i in range(5000):
     
     showgen += 1
     if showgen >= 100:
-        print("Génération: " + str(gen) + " | Winrate: " + str(round(winrate, 1)) + "%")
+        print("Génération: " + str(gen) + " | Winrate: " + str(round(winrate, 1)) + "% | Indi gagnant: " + str(len(bestindi)))
         showgen = 0
 
     makenewgen(population, bestindi, CHANCE_MUTATION_NEURONE, MEMBRES_PAR_POPULATION)
@@ -120,24 +123,23 @@ for i in range(5000):
         savepop(save, population, bestindi[random.randint(0, len(bestindi)-1)], gen, data)
         generationmade = 0
     
-print("Génération: " + str(gen) + " | Winrate: " + str(round(winrate, 1)) + "%")
+print("Génération: " + str(gen) + " | Winrate: " + str(round(winrate, 1)) + "% | Indi gagnant: " + str(len(bestindi)))
 savepop(save, population, bestindi[random.randint(0, len(bestindi)-1)], gen, data)
 #fichier.close()
 
 """
-running = True
-debug = False
-stats = 0
-screen = pygame.display.set_mode()
-screen_x, screen_y = screen.get_size()
-pygame.display.set_caption('NimGame')
-clock = pygame.time.Clock()
-
-background = pygameimage(pygame.image.load('assets/background.png'), (screen_x // 2 - 2560 // 2, screen_y // 2 - 1440 // 2))
 
 while running:
 
     screen.blit(background.image, background.pos)
+
+    if stats == 0:
+        screen.blit(logo.image, logo.pos)
+        display(screen, btn_play)
+        display(screen, btn_learn)
+        display(screen, btn_exit)
+    elif stats == 1:
+        pass
 
     # Manage user inputs
     for event in pygame.event.get():
@@ -146,9 +148,17 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == pygame.BUTTON_LEFT:
+                if stats == 0:
+                    if collide(btn_play["target"], event.pos):
+                        stats = 1
+                    if collide(btn_learn["target"], event.pos):
+                        pass
+                    if collide(btn_exit["target"], event.pos):
+                        running = False
 
     pygame.display.flip()
     clock.tick(60)
 
 pygame.quit()
-"""
