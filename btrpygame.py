@@ -1,5 +1,4 @@
 import pygame
-
 class pygameimage():
 
     def __init__(self, image, pos):
@@ -39,7 +38,6 @@ def showtext(screen, text, font, size, pos, color, align):
     else:
         text_rect.bottomright = pos
     screen.blit(text_shown, text_rect)
-    return final_font.size(text)
 
 def createbtn(file, size, pos):
     btn = {

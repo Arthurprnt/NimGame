@@ -129,6 +129,10 @@ savepop(save, population, bestindi[random.randint(0, len(bestindi)-1)], gen, dat
 
 """
 
+pieces = 8
+
+pygame.init()
+
 while running:
 
     screen.blit(background.image, background.pos)
@@ -139,7 +143,15 @@ while running:
         display(screen, btn_learn)
         display(screen, btn_exit)
     elif stats == 1:
-        pass
+        showtext(screen, "How many coins do you want to take ?", "assets/DIN_Bold.ttf", 50, (screen_x // 2, screen_y // 2), (255, 255, 255), "center")
+        display(screen, btn_1)
+        display(screen, btn_2)
+        display(screen, btn_3)
+        for i in range(pieces):
+            screen.blit(liste_coins[i].image, liste_coins[i].pos)
+    elif stats == 2:
+        for i in range(pieces):
+            screen.blit(liste_coins[i].image, liste_coins[i].pos)
 
     # Manage user inputs
     for event in pygame.event.get():
@@ -153,10 +165,20 @@ while running:
                 if stats == 0:
                     if collide(btn_play["target"], event.pos):
                         stats = 1
-                    if collide(btn_learn["target"], event.pos):
+                    elif collide(btn_learn["target"], event.pos):
                         pass
-                    if collide(btn_exit["target"], event.pos):
+                    elif collide(btn_exit["target"], event.pos):
                         running = False
+                elif stats == 1:
+                    if collide(btn_1["target"], event.pos):
+                        pieces -= 1
+                        stats = 2
+                    elif collide(btn_2["target"], event.pos):
+                        pieces -= 2
+                        stats = 2
+                    elif collide(btn_3["target"], event.pos):
+                        pieces -= 3
+                        stats = 2
 
     pygame.display.flip()
     clock.tick(60)
