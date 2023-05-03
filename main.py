@@ -126,8 +126,6 @@ savepop(save, population, bestindi[random.randint(0, len(bestindi)-1)], gen, dat
 """
 
 CHANCE_MUTATION_NEURONE = 0.19
-MEMBRES_PAR_POPULATION = 120
-NOMBRE_PIECE = 8
 PLAY_BEST = False
 
 pieces = 8
@@ -146,7 +144,6 @@ while running:
     elif stats == 1:
         screen.blit(logo.image, logo.pos)
         display(screen, btn_load)
-        display(screen, btn_create)
         display(screen, btn_back)
         if namesave != "":
             showtext(screen, "Save name: " + namesave, "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2 - 150), (255, 255, 255), "center")
@@ -164,8 +161,21 @@ while running:
         for i in range(pieces):
             screen.blit(liste_coins[i].image, liste_coins[i].pos)
     elif stats == 3:
+        stats = 4
+        choice = round(best[pieces - 1])
+        pieces -= round(best[pieces - 1])
+        if pieces <= 0:
+            win = True
+            textwinner = "The ia won the match !"
+    elif stats == 4:
         for i in range(pieces):
             screen.blit(liste_coins[i].image, liste_coins[i].pos)
+        showtext(screen, f"The ia took {choice} coins.", "assets/DIN_Bold.ttf", 90, (screen_x // 2, screen_y // 2 - 150), (255, 255, 255), "center")
+        display(screen, btn_next)
+    elif stats == 5:
+        showtext(screen, textwinner, "assets/DIN_Bold.ttf", 90, (screen_x // 2, screen_y // 2 - 150), (255, 255, 255), "center")
+        display(screen, btn_replay)
+        display(screen, btn_exitgame)
     # Manage user inputs
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -187,6 +197,7 @@ while running:
                         error1 = False
                         error2 = False
                         stats = 1
+                        win = False
                     elif collide(btn_learn["target"], event.pos):
                         pass
                     elif collide(btn_exit["target"], event.pos):
@@ -200,31 +211,14 @@ while running:
                             file = open("json/" + namesave + '.json')
                             data = json.load(file)
 
-                            if data['pop'] != []:
-                                MEMBRES_PAR_POPULATION = len(data['pop'][0])
-                                NOMBRE_PIECE = len(data['pop'][0][0])
-                                gen = data["gen"]
-                                population = data["pop"]
-                                best = data["best"]
-                            else:
-                                population = [createPop(MEMBRES_PAR_POPULATION, CHANCE_MUTATION_NEURONE, NOMBRE_PIECE)]
-                                data = {"pop": [], "gen": 0}
-                                gen = 0
-                                best = []
+                            MEMBRES_PAR_POPULATION = len(data['pop'][0])
+                            NOMBRE_PIECE = len(data['pop'][0][0])
+                            gen = data["gen"]
+                            population = data["pop"]
+                            best = data["best"]
 
                             stats = 2
-                    elif collide(btn_create["target"], event.pos):
-                        if namesave == "" or os.path.isfile("json/" + namesave + '.json'):
-                            error2 = True
-                            error1 = False
-                        else:
-                            population = [createPop(MEMBRES_PAR_POPULATION, CHANCE_MUTATION_NEURONE, NOMBRE_PIECE)]
-                            data = {"pop": [], "gen": 0}
-                            gen = 0
-                            best = []
-
-                            stats = 2
-                    elif collide(btn_exit["target"], event.pos):
+                    elif collide(btn_back["target"], event.pos):
                         stats = 0
                 elif stats == 2:
                     if collide(btn_1["target"], event.pos):
@@ -236,6 +230,21 @@ while running:
                     elif collide(btn_3["target"], event.pos):
                         pieces -= 3
                         stats = 3
+                    if pieces <= 0:
+                        win = True
+                        textwinner = "You won the match !"
+                elif stats == 4:
+                    if collide(btn_next["target"], event.pos):
+                        if not win:
+                            stats = 2
+                        else:
+                            stats = 5
+                elif stats == 5:
+                    if collide(btn_replay["target"], event.pos):
+                        stats = 2
+                        pieces = 8
+                    elif collide(btn_exitgame["target"], event.pos):
+                        stats = 0
 
     pygame.display.flip()
     clock.tick(60)
