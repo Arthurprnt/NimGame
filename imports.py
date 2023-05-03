@@ -4,11 +4,14 @@ from btrpygame import *
 running = True
 debug = False
 stats = 0
-screen = pygame.display.set_mode((1920, 1080))
+screen = pygame.display.set_mode()
 screen_x, screen_y = screen.get_size()
 pygame.display.set_caption('NimGame')
 pygame.display.set_icon(pygame.image.load('assets/icon.png'))
 clock = pygame.time.Clock()
+
+accepted_carac = [chr(i) for i in range(97, 123)]
+print(accepted_carac)
 
 background = pygameimage(pygame.image.load('assets/background.png'), (screen_x // 2 - 2560 // 2, screen_y // 2 - 1440 // 2))
 logo = pygameimage(pygame.transform.scale(pygame.image.load('assets/logo.png'), (1500, 322)), (screen_x // 2 - 1500 // 2, screen_y // 15))
@@ -27,3 +30,6 @@ liste_coins = [coin1, coin2, coin3, coin4, coin5, coin6, coin7, coin8]
 btn_1 = createbtn("assets/1.png", (200, 200), (screen_x // 2 - 200 // 2 - 300, screen_y // 1.7))
 btn_2 = createbtn("assets/2.png", (200, 200), (screen_x // 2 - 200 // 2, screen_y // 1.7))
 btn_3 = createbtn("assets/3.png", (200, 200), (screen_x // 2 - 200 // 2 + 300, screen_y // 1.7))
+btn_load = createbtn("assets/load.png", (465, 105), (screen_x // 2 - 465 // 2, screen_y // 2))
+btn_create = createbtn("assets/create.png", (465, 105), (screen_x // 2 - 465 // 2, screen_y // 2 + 120))
+btn_back = createbtn("assets/back.png", (465, 105), (screen_x // 2 - 465 // 2, screen_y // 2 + 240))
