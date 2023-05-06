@@ -11,7 +11,6 @@ pygame.display.set_icon(pygame.image.load('assets/icon.png'))
 clock = pygame.time.Clock()
 
 accepted_carac = [chr(i) for i in range(97, 123)]
-print(accepted_carac)
 
 background = pygameimage(pygame.image.load('assets/background.png'), (screen_x // 2 - 2560 // 2, screen_y // 2 - 1440 // 2))
 logo = pygameimage(pygame.transform.scale(pygame.image.load('assets/logo.png'), (1500, 322)), (screen_x // 2 - 1500 // 2, screen_y // 15))
@@ -35,3 +34,6 @@ btn_back = createbtn("assets/back.png", (465, 105), (screen_x // 2 - 465 // 2, s
 btn_next = createbtn("assets/next.png", (326, 74), (screen_x // 2 - 326 // 2, screen_y // 2 - 70))
 btn_replay = createbtn("assets/replay.png", (465, 105), (screen_x // 2 - 465 // 2, screen_y // 2))
 btn_exitgame = createbtn("assets/exit.png", (465, 105), (screen_x // 2 - 465 // 2, screen_y // 2 + 120))
+btn_lcreate = createbtn("assets/create.png", (465, 105), (screen_x // 2 - 465 // 2, screen_y // 2))
+btn_lload = createbtn("assets/load.png", (465, 105), (screen_x // 2 - 465 // 2, screen_y // 2 + 120))
+btn_lback = createbtn("assets/back.png", (465, 105), (screen_x // 2 - 465 // 2, screen_y // 2 + 240))

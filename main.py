@@ -125,6 +125,12 @@ savepop(save, population, bestindi[random.randint(0, len(bestindi)-1)], gen, dat
 
 """
 
+"""
+STATS:
+0 = MENU
+1-5 = PLAY AGAINST BEST IA
+"""
+
 CHANCE_MUTATION_NEURONE = 0.19
 PLAY_BEST = False
 
@@ -176,6 +182,19 @@ while running:
         showtext(screen, textwinner, "assets/DIN_Bold.ttf", 90, (screen_x // 2, screen_y // 2 - 150), (255, 255, 255), "center")
         display(screen, btn_replay)
         display(screen, btn_exitgame)
+    elif stats == 6:
+        screen.blit(logo.image, logo.pos)
+        display(screen, btn_lcreate)
+        display(screen, btn_lload)
+        display(screen, btn_lback)
+        if namesave != "":
+            showtext(screen, "Save name: " + namesave, "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2 - 150), (255, 255, 255), "center")
+        else:
+            showtext(screen, "Save name: *write it*", "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2 - 150), (255, 255, 255), "center")
+        if error1:
+            showtext(screen, "This file does not exist", "assets/DIN_Bold.ttf", 30, (screen_x // 2, screen_y // 2 - 90), (255, 100, 90), "center")
+        if error2:
+            showtext(screen, "You must give the save a name. Be sure this file does not exist.", "assets/DIN_Bold.ttf", 30, (screen_x // 2, screen_y // 2 - 90), (255, 100, 90), "center")
     # Manage user inputs
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -183,10 +202,10 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
-            elif event.key == pygame.K_BACKSPACE and stats == 1:
+            elif event.key == pygame.K_BACKSPACE and stats in (1, 6):
                 namesave = namesave[:-1]
                 error = False
-            elif event.unicode in accepted_carac and stats == 1:
+            elif event.unicode in accepted_carac and stats in (1, 6):
                 namesave += event.unicode
                 error1 = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -199,7 +218,11 @@ while running:
                         stats = 1
                         win = False
                     elif collide(btn_learn["target"], event.pos):
-                        pass
+                        namesave = ""
+                        error1 = False
+                        error2 = False
+                        win = False
+                        stats = 6
                     elif collide(btn_exit["target"], event.pos):
                         running = False
                 elif stats == 1:
@@ -244,6 +267,21 @@ while running:
                         stats = 2
                         pieces = 8
                     elif collide(btn_exitgame["target"], event.pos):
+                        stats = 0
+                elif stats == 6:
+                    if collide(btn_lcreate["target"], event.pos):
+                        if namesave == "" or os.path.isfile("json/" + namesave + '.json'):
+                            error2 = True
+                            error1 = False
+                        else:
+                            stats = 7
+                    elif collide(btn_lload["target"], event.pos):
+                        if not os.path.isfile("json/" + namesave + '.json'):
+                            error1 = True
+                            error2 = False
+                        else:
+                            stats = 7
+                    elif collide(btn_lback["target"], event.pos):
                         stats = 0
 
     pygame.display.flip()
