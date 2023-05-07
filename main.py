@@ -132,6 +132,8 @@ STATS:
 """
 
 CHANCE_MUTATION_NEURONE = 0.19
+NOMBRE_PIECE = 8
+MEMBRES_PAR_POPULATION = 15
 PLAY_BEST = False
 
 pieces = 8
@@ -195,6 +197,84 @@ while running:
             showtext(screen, "This file does not exist", "assets/DIN_Bold.ttf", 30, (screen_x // 2, screen_y // 2 - 90), (255, 100, 90), "center")
         if error2:
             showtext(screen, "You must give the save a name. Be sure this file does not exist.", "assets/DIN_Bold.ttf", 30, (screen_x // 2, screen_y // 2 - 90), (255, 100, 90), "center")
+    elif stats == 7:
+        display(screen, btn_exit)
+        showtext(screen, f"Last winner: {winner}", "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2 - 200), (255, 255, 255), "center")
+        showtext(screen, f"Ia winrate: {winrate}", "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2 - 100), (255, 255, 255), "center")
+        showtext(screen, f"Indi: {indi}", "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2), (255, 255, 255), "center")
+        showtext(screen, f"Gen: {gen}", "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2 + 100), (255, 255, 255), "center")
+        for i in range(pieces):
+            screen.blit(liste_coins[i].image, liste_coins[i].pos)
+
+        mooves = [1, 2, 3, 0, 1, 2, 3, 0]
+        for i in range(len(mooves)):
+            if mooves[i] == 0:
+                mooves[i] = random.randint(1, 3)
+
+        if auto is True:
+            pieces -= mooves[pieces-1]
+        else:
+            pass
+        if pieces <= 0:
+            liste_switness.append(switness)
+            winner = "Humain"
+            winrate = round((winia * 100) / (indi+1))
+            if indi == MEMBRES_PAR_POPULATION-1:
+                bestindi = []
+                bestswit = 0
+                for i in range(len(population[-1])):
+                    if liste_switness[i] > bestswit:
+                        bestswit = liste_switness[i]
+                        bestindi = [population[-1][i]]
+                    elif liste_switness[i] == bestswit:
+                        bestindi.append(population[-1][i])
+                gen += 1
+                winia = 0
+                indi = 0
+                makenewgen(population, bestindi, CHANCE_MUTATION_NEURONE, MEMBRES_PAR_POPULATION)
+                savepop(namesave, population, bestindi[random.randint(0, len(bestindi) - 1)], gen, data)
+            else:
+                indi += 1
+            pieces = NOMBRE_PIECE
+            stats = 7
+        else:
+            stats = 8
+    elif stats == 8:
+        display(screen, btn_exit)
+        showtext(screen, f"Last winner: {winner}", "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2 - 200), (255, 255, 255), "center")
+        showtext(screen, f"Ia winrate: {winrate}", "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2 - 100), (255, 255, 255), "center")
+        showtext(screen, f"Indi: {indi}", "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2), (255, 255, 255), "center")
+        showtext(screen, f"Gen: {gen}", "assets/DIN_Bold.ttf", 70, (screen_x // 2, screen_y // 2 + 100), (255, 255, 255), "center")
+        for i in range(pieces):
+            screen.blit(liste_coins[i].image, liste_coins[i].pos)
+
+        pieces -= round(population[-1][indi][pieces - 1])
+        switness -= 1
+        if pieces <= 0:
+            switness += 100
+            liste_switness.append(switness)
+            winia += 1
+            winner = "Ia"
+            winrate = round((winia * 100) / (indi+1))
+            if indi == MEMBRES_PAR_POPULATION-1:
+                bestindi = []
+                bestswit = 0
+                for i in range(len(population[-1])):
+                    if liste_switness[i] > bestswit:
+                        bestswit = liste_switness[i]
+                        bestindi = [population[-1][i]]
+                    elif liste_switness[i] == bestswit:
+                        bestindi.append(population[-1][i])
+                gen += 1
+                winia = 0
+                indi = 0
+                liste_switness = []
+                makenewgen(population, bestindi, CHANCE_MUTATION_NEURONE, MEMBRES_PAR_POPULATION)
+                savepop(namesave, population, bestindi[random.randint(0, len(bestindi) - 1)], gen, data)
+            else:
+                indi += 1
+            pieces = NOMBRE_PIECE
+        stats = 7
     # Manage user inputs
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -274,17 +354,47 @@ while running:
                             error2 = True
                             error1 = False
                         else:
+                            population = [createPop(MEMBRES_PAR_POPULATION, CHANCE_MUTATION_NEURONE, NOMBRE_PIECE)]
+                            data = {"pop": [], "gen": 0}
+                            gen = 0
+                            indi = 0
+                            liste_switness = []
+                            winia = 0
+                            switness = NOMBRE_PIECE
+
+                            auto = True
+                            winrate = "/"
+                            winner = "/"
                             stats = 7
                     elif collide(btn_lload["target"], event.pos):
                         if not os.path.isfile("json/" + namesave + '.json'):
                             error1 = True
                             error2 = False
                         else:
+                            file = open("json/" + namesave + '.json')
+                            data = json.load(file)
+
+                            MEMBRES_PAR_POPULATION = len(data['pop'][0])
+                            NOMBRE_PIECE = len(data['pop'][0][0])
+                            gen = data["gen"]
+                            population = data["pop"]
+                            indi = 0
+                            liste_switness = []
+                            winia = 0
+                            switness = NOMBRE_PIECE
+
+                            auto = True
+                            winrate = "/"
+                            winner = "/"
                             stats = 7
                     elif collide(btn_lback["target"], event.pos):
                         stats = 0
+                elif stats in (7, 8):
+                    if collide(btn_exit["target"], event.pos):
+                        namesave = ""
+                        stats = 6
 
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(30)
 
 pygame.quit()
